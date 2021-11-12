@@ -1,0 +1,2 @@
+run = "gcc -Wall -Wpedantic -Wextra -ansi *.c -o solitair && ./solitair"
+language = "C"
