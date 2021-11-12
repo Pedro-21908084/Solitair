@@ -4,6 +4,8 @@
 
 #define MSG_WIN "You Win! Congratulations!"
 #define MSG_LOSE "You Lost! Better luck next time!"
+
+#define ARG_MIN 5
 	
 
 /* needed functions */
@@ -17,11 +19,15 @@ int main(int argc, char ** argv)
 	long seed = 7;
 	int level = 3, nrows = 12, nhold = 2;
 	/* verify command line arguments */
+    if(argc >= ARG_MIN)
+    {
+        sscanf(argv[1], "%ld", &seed);
+        sscanf(argv[2], "%d", &level);
+        sscanf(argv[3], "%d", &nrows);
+        sscanf(argv[4], "%d", &nhold);
+    }
 
-	sscanf(argv[1], "%d", &level);
-	sscanf(argv[2], "%ld", &seed);
-	sscanf(argv[3], "%d", &nrows);
-
+    printf("seed:%ld\nlevel:%d\nrows:%d\nhold:%d\n", seed, level, nrows, nhold);
 
 	/* initialize random seed */
 	srand(seed);
