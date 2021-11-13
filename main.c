@@ -6,18 +6,54 @@
 #define MSG_LOSE "You Lost! Better luck next time!"
 
 #define ARG_MIN 5
-	
+#define MED 0
+#define MAX_RAND 10
+#define MIN_RAND -10
+
+typedef struct solitair
+{
+    int  *hl;
+    int *hr;
+    int *left;
+    int *right;
+}solitair;
 
 /* needed functions */
 double uniRand(void);
 double randn(double, double);
 int randn_sat(double, double, int, int);
 
+void deckGenerator(solitair *deck, int max, int desv)
+{
+    int i;
+    for(i=0;i<max;i++)
+    {
+        deck->left[i]=randn_sat(MED, desv, MIN_RAND, MAX_RAND);
+        deck->right[i]=randn_sat(MED, desv, MIN_RAND, MAX_RAND);
+    }
+}
+
+solitair *deckMaker(int row, int hold)
+{
+    solitair *deck;
+    deck = calloc(2*hold+2*row,sizeof(int));
+
+    deck->hl = calloc(hold, sizeof(int));
+    deck->hr = calloc(hold, sizeof(int));
+    deck->left = calloc(row, sizeof(int));
+    deck->right = calloc(row, sizeof(int));
+    
+    return deck;
+}
 
 int main(int argc, char ** argv)
 {	
 	long seed = 7;
 	int level = 3, nrows = 12, nhold = 2;
+    char comand;
+    solitair *baralho;
+    int sum =10;
+
 	/* verify command line arguments */
     if(argc >= ARG_MIN)
     {
@@ -32,6 +68,35 @@ int main(int argc, char ** argv)
 	/* initialize random seed */
 	srand(seed);
 
+    /*deck generation*/
+    baralho = deckMaker(nrows, nhold);
+    deckGenerator(baralho, nrows, level);
+
+    while(1)
+    {
+        scanf("%c", &comand);
+
+        switch(comand)
+        {
+            case'a':
+            case's':
+            case'q':
+            case'w':
+            case'z':
+            case'x':
+            default:
+                break;
+        }
+
+
+        if(sum<0||sum>21)
+        {
+            printf(MSG_LOSE);
+            return 0;
+        }
+        /*read \n*/
+        scanf("%c", &comand);
+    }
 
 	return 0;
 }
