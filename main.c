@@ -46,6 +46,70 @@ solitair *deckMaker(int row, int hold)
     return deck;
 }
 
+void printNum(int x)
+{
+    if(0<=x && x<=10)
+        printf("  %d  ", x);
+    else if(x<=-10)
+        printf(" %d ", x);
+    else
+        printf(" %d  ", x);
+}
+
+void printDeck(int rows, int hold ,solitair *deck, int sum, int lookl, int lookr)
+{
+    int i,j;
+    
+    printf("+-----+-----+---+-----+-----+\n|HOLD |LEFT |///|RIGHT|HOLD |\n+-----+-----+---+-----+-----+\n");
+
+    for(i=0, j=0;i<rows;i++,j++)
+    {
+        printf("|");
+
+        if(j<hold && deck->hl[i] !=0)
+            printNum(deck->hl[i]);
+        else
+            printf("     ");
+        
+        printf("|");
+
+        if(i == lookl)
+            printNum(deck->left[i]);
+        else if(i>lookl)
+            printf("     ");
+        else
+            printf("  *  ");
+        
+        printf("|///|");
+
+        if(i == lookr)
+            printNum(deck->right[i]);
+        else if(i>lookr)
+            printf("     ");
+        else
+            printf("  *  ");
+        
+
+        printf("|");
+
+        if(j<hold && deck->hr[i] !=0)
+            printNum(deck->hr[i]);
+        else
+            printf("     ");
+        
+        printf("|");
+
+        printf("\n");
+    }
+    printf("+-----+-----+---+-----+-----+\n|SUM = ");
+    if (sum < 10)
+        printf("%d ", sum);
+    else
+        printf("%d", sum);
+
+    printf("                   |\n+---------------------------+\n");
+}
+
 int main(int argc, char ** argv)
 {	
 	long seed = 7;
@@ -53,6 +117,7 @@ int main(int argc, char ** argv)
     char comand;
     solitair *baralho;
     int sum =10;
+    int headl, headr, headhl =-1, headhr=-1;
 
 	/* verify command line arguments */
     if(argc >= ARG_MIN)
@@ -63,7 +128,10 @@ int main(int argc, char ** argv)
         sscanf(argv[4], "%d", &nhold);
     }
 
-    printf("seed:%ld\nlevel:%d\nrows:%d\nhold:%d\n", seed, level, nrows, nhold);
+    headl=nrows-1;
+    headr=nrows-1;
+
+    /*printf("seed:%ld\nlevel:%d\nrows:%d\nhold:%d\n", seed, level, nrows, nhold);*/
 
 	/* initialize random seed */
 	srand(seed);
@@ -72,6 +140,8 @@ int main(int argc, char ** argv)
     baralho = deckMaker(nrows, nhold);
     deckGenerator(baralho, nrows, level);
 
+    printDeck(nrows, nhold, baralho, sum, headl, headr);
+
     while(1)
     {
         scanf("%c", &comand);
@@ -79,19 +149,50 @@ int main(int argc, char ** argv)
         switch(comand)
         {
             case'a':
+                sum += baralho->left[headl];
+                headl--;
+                break;
             case's':
+                sum += baralho->right[headr];
+                headr--;
+                break;
             case'q':
+                headhl++;
+                baralho->hl[headhl]=baralho->left[headl];
+                headl--;
+                break;
             case'w':
+                headhr++;
+                baralho->hr[headhr]=baralho->right[headr];
+                headr--;
+                break;
             case'z':
+                sum += baralho->hl[headhl];
+                baralho->hl[headhl]=0;
+                headhl--;
+                if(headhl<0)
+                    headhl=0;
+                break;
             case'x':
+                sum += baralho->hr[headhr];
+                baralho->hr[headhr]=0;
+                headhr--;
+                if(headhr<0)
+                    headhr=0;
+                break;
             default:
                 break;
         }
 
+        printDeck(nrows, nhold, baralho, sum, headl, headr);
 
         if(sum<0||sum>21)
         {
             printf(MSG_LOSE);
+            return 0;
+        }else if(headl<0 && headr<0)
+        {
+            printf(MSG_WIN);
             return 0;
         }
         /*read \n*/
